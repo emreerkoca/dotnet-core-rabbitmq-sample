@@ -20,6 +20,7 @@ namespace DotnetCoreRabbitMqSample.Api.Consumers
         public async Task Consume(ConsumeContext<SampleEvent> context)
         {
             _logger.LogInformation("Value: {Value}", context.Message.SampleProperty);
+            _logger.LogInformation("Time: " + DateTime.UtcNow.ToString());
         }
     }   
 }

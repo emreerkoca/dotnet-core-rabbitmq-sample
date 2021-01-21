@@ -14,6 +14,7 @@ using MassTransit;
 using DotnetCoreRabbitMqSample.Api.Consumers;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using GreenPipes;
 
 namespace DotnetCoreRabbitMqSample.Api
 {
@@ -47,6 +48,8 @@ namespace DotnetCoreRabbitMqSample.Api
 
 
                 x.UsingRabbitMq((context, cfg) => {
+                    cfg.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(2)));
+
                     cfg.ReceiveEndpoint("event-listener", e =>
                     {
                         e.ConfigureConsumer<SampleEventConsumer>(context);
