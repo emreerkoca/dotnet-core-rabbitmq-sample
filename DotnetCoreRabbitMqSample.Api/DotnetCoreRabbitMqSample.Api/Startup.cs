@@ -15,6 +15,8 @@ using DotnetCoreRabbitMqSample.Api.Consumers;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using GreenPipes;
+using DotnetCoreRabbitMqSample.Api.Services;
+using AutoMapper;
 
 namespace DotnetCoreRabbitMqSample.Api
 {
@@ -42,7 +44,7 @@ namespace DotnetCoreRabbitMqSample.Api
                 
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<SampleEventConsumer>();
+                x.AddConsumer<MembershipStartedEventConsumer>();
 
                 x.SetKebabCaseEndpointNameFormatter();
 
@@ -52,12 +54,15 @@ namespace DotnetCoreRabbitMqSample.Api
 
                     cfg.ReceiveEndpoint("event-listener", e =>
                     {
-                        e.ConfigureConsumer<SampleEventConsumer>(context);
+                        e.ConfigureConsumer<MembershipStartedEventConsumer>(context);
                     });
                 });
             });
 
             services.AddMassTransitHostedService();
+            services.AddAutoMapper(typeof(Startup));
+
+            services.AddScoped<IMembershipService, MembershipService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -73,11 +78,6 @@ namespace DotnetCoreRabbitMqSample.Api
             app.UseRouting();
 
             app.UseAuthorization();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //});
 
             app.UseEndpoints(endpoints =>
             {
