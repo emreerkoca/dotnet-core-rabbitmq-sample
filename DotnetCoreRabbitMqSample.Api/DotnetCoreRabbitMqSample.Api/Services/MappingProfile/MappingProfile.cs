@@ -9,6 +9,7 @@ namespace DotnetCoreRabbitMqSample.Api.Services.MappingProfile
         public MappingProfile()
         {
             CreateMap<PostMembershipRequest, MembershipResponse>();
+            CreateMap<TextResponse, PutTextRequest>();
         }
     }
 }

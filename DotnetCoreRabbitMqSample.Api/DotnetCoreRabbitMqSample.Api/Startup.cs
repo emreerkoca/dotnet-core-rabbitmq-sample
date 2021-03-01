@@ -1,22 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using MassTransit;
 using DotnetCoreRabbitMqSample.Api.Consumers;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using GreenPipes;
 using DotnetCoreRabbitMqSample.Api.Services;
-using AutoMapper;
 
 namespace DotnetCoreRabbitMqSample.Api
 {
@@ -45,16 +38,21 @@ namespace DotnetCoreRabbitMqSample.Api
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<MembershipStartedEventConsumer>();
+                x.AddConsumer<TextCreatedEventConsumer>(typeof(TextCreatedEventConsumerDefinition));
 
                 x.SetKebabCaseEndpointNameFormatter();
-
 
                 x.UsingRabbitMq((context, cfg) => {
                     cfg.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(2)));
 
-                    cfg.ReceiveEndpoint("event-listener", e =>
+                    cfg.ReceiveEndpoint("MembershipStartedEventConsumerQueue", e =>
                     {
                         e.ConfigureConsumer<MembershipStartedEventConsumer>(context);
+                    });
+
+                    cfg.ReceiveEndpoint("TextCreatedEventConsumerQueue", e =>
+                    {
+                        e.ConfigureConsumer<TextCreatedEventConsumer>(context);
                     });
                 });
             });
@@ -63,6 +61,7 @@ namespace DotnetCoreRabbitMqSample.Api
             services.AddAutoMapper(typeof(Startup));
 
             services.AddScoped<IMembershipService, MembershipService>();
+            services.AddScoped<ITextService, TextService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
