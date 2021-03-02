@@ -38,7 +38,7 @@ namespace DotnetCoreRabbitMqSample.Api
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<MembershipStartedEventConsumer>();
-                x.AddConsumer<TextCreatedEventConsumer>(typeof(TextCreatedEventConsumerDefinition));
+                x.AddConsumer<TextCreatedEventConsumer>();
 
                 x.SetKebabCaseEndpointNameFormatter();
 
