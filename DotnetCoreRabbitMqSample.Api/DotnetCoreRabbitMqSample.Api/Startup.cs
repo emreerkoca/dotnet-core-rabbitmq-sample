@@ -38,7 +38,6 @@ namespace DotnetCoreRabbitMqSample.Api
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<MembershipStartedEventConsumer>();
-                x.AddConsumer<TextCreatedEventConsumer>();
 
                 x.SetKebabCaseEndpointNameFormatter();
 
@@ -49,11 +48,6 @@ namespace DotnetCoreRabbitMqSample.Api
                     {
                         e.ConfigureConsumer<MembershipStartedEventConsumer>(context);
                     });
-
-                    cfg.ReceiveEndpoint("TextCreatedEventConsumerQueue", e =>
-                    {
-                        e.ConfigureConsumer<TextCreatedEventConsumer>(context);
-                    });
                 });
             });
 
@@ -61,7 +55,6 @@ namespace DotnetCoreRabbitMqSample.Api
             services.AddAutoMapper(typeof(Startup));
 
             services.AddScoped<IMembershipService, MembershipService>();
-            services.AddScoped<ITextService, TextService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
