@@ -10,6 +10,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using GreenPipes;
 using DotnetCoreRabbitMqSample.Api.Services;
+using System.Collections.Generic;
 
 namespace DotnetCoreRabbitMqSample.Api
 {
@@ -41,8 +42,10 @@ namespace DotnetCoreRabbitMqSample.Api
 
                 x.SetKebabCaseEndpointNameFormatter();
 
+                List<TimeSpan> timeSpans = GenerateUniqueTimeList();
+
                 x.UsingRabbitMq((context, cfg) => {
-                    cfg.UseMessageRetry(r => r.Incremental(5, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(2)));
+                    cfg.UseMessageRetry(r => r.Intervals(timeSpans.ToArray()));
 
                     cfg.ReceiveEndpoint("MembershipStartedEventConsumerQueue", e =>
                     {
@@ -82,6 +85,41 @@ namespace DotnetCoreRabbitMqSample.Api
 
                 endpoints.MapHealthChecks("/health/live", new HealthCheckOptions());
             });
+        }
+
+        List<TimeSpan> GenerateUniqueTimeList()
+        {
+            List<int> randomTimeList = new List<int>();
+            List<TimeSpan> timeSpans = new List<TimeSpan>();
+            Random random = new Random();
+
+            for (int i = 0; i < 5; i++)
+            {
+                int randomTimeValue = random.Next(0, 10);
+
+                randomTimeValue = ConvertRandomTimeValueToUniqueValue(randomTimeList, randomTimeValue);
+
+                timeSpans.Add(TimeSpan.FromMinutes(randomTimeValue));
+            }
+
+            return timeSpans;
+        }
+
+        int ConvertRandomTimeValueToUniqueValue(List<int> randomTimeList, int randomTimeValue)
+        {
+            bool isRandomTimeValueUnique = false;
+
+            while (!isRandomTimeValueUnique)
+            {
+                randomTimeValue += 2;
+
+                if (!randomTimeList.Contains(randomTimeValue))
+                {
+                    isRandomTimeValueUnique = true;
+                }
+            }
+
+            return randomTimeValue;
         }
     }
 }

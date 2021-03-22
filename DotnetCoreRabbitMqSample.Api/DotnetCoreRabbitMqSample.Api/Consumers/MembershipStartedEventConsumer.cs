@@ -28,6 +28,10 @@ namespace DotnetCoreRabbitMqSample.Api.Consumers
                 Body = "You're officially an X community member. Congrats :)"
             };
 
+            _logger.LogInformation("DateTime: " + DateTime.UtcNow);
+            throw new Exception("Exception test");
+
+
             await SendEmail(emailModel);
         }
 
