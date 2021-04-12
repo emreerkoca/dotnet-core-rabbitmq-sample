@@ -93,13 +93,13 @@ namespace DotnetCoreRabbitMqSample.Api
             List<TimeSpan> timeSpans = new List<TimeSpan>();
             Random random = new Random();
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 int randomTimeValue = random.Next(0, 10);
 
                 randomTimeValue = ConvertRandomTimeValueToUniqueValue(randomTimeList, randomTimeValue);
 
-                timeSpans.Add(TimeSpan.FromMinutes(randomTimeValue));
+                timeSpans.Add(TimeSpan.FromSeconds(randomTimeValue));
             }
 
             return timeSpans;
