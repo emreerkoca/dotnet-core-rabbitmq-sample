@@ -6,16 +6,20 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using DotnetCoreRabbitMqSample.Api.Contracts.Model;
 using DotnetCoreRabbitMqSample.Api.Contracts.Responses;
+using DotnetCoreRabbitMqSample.Api.Services;
 
 namespace DotnetCoreRabbitMqSample.Api.Consumers
 {
     public class MembershipStartedEventConsumer : IConsumer<MembershipStartedEvent>
     {
         ILogger<MembershipStartedEventConsumer> _logger;
+        IMessageBrokerService _messageBrokerService;
+        
 
-        public MembershipStartedEventConsumer(ILogger<MembershipStartedEventConsumer> logger)
+        public MembershipStartedEventConsumer(ILogger<MembershipStartedEventConsumer> logger, IMessageBrokerService messageBrokerService)
         {
             _logger = logger;
+            _messageBrokerService = messageBrokerService;
         }
 
         public async Task Consume(ConsumeContext<MembershipStartedEvent> context)
@@ -29,10 +33,12 @@ namespace DotnetCoreRabbitMqSample.Api.Consumers
             };
 
             _logger.LogInformation("DateTime: " + DateTime.UtcNow);
-            throw new Exception("Exception test");
+            //throw new Exception("Exception test");
 
 
             await SendEmail(emailModel);
+
+            await _messageBrokerService.PutMessageAsProcessed(context.Message.Id);
         }
 
         public async Task SendEmail(EmailModel emailModel)

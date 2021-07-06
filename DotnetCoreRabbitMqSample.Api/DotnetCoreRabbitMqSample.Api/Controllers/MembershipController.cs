@@ -1,6 +1,7 @@
 ﻿using DotnetCoreRabbitMqSample.Api.Contracts.Requests;
 using DotnetCoreRabbitMqSample.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace DotnetCoreRabbitMqSample.Api.Controllers
 {
@@ -15,9 +16,9 @@ namespace DotnetCoreRabbitMqSample.Api.Controllers
         }
 
         [HttpPost("")]
-        public ActionResult Post([FromBody] PostMembershipRequest popstMembershipRequest)
+        public async Task<IActionResult> Post([FromBody] PostMembershipRequest popstMembershipRequest)
         {
-            var result = _membershipService.PostMembership(popstMembershipRequest);
+            var result = await _membershipService.PostMembership(popstMembershipRequest);
 
             return Ok(result);
         }
