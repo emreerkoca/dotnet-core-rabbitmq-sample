@@ -16,10 +16,11 @@ namespace DotnetCoreRabbitMqSample.Api.Services
         private readonly IMapper _mapper;
         private readonly AppDbContext _appDbContext;
 
-        public MembershipService(IBusControl busControl, IMapper mapper)
+        public MembershipService(IBusControl busControl, IMapper mapper, AppDbContext appDbContext)
         {
             _busControl = busControl;
             _mapper = mapper;
+            _appDbContext = appDbContext;
         }
 
         public async Task<MembershipResponse> PostMembership(PostMembershipRequest postMembershipRequest)
@@ -41,8 +42,7 @@ namespace DotnetCoreRabbitMqSample.Api.Services
             });
 
             await _appDbContext.SaveChangesAsync();
-
-            await _busControl.Publish<MembershipStartedEvent>(membershipStartedEvent);
+            await _busControl.Publish(membershipStartedEvent);
 
             return membershipResponse;
         }

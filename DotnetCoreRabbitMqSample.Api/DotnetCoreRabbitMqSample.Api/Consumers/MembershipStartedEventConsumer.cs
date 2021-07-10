@@ -35,7 +35,6 @@ namespace DotnetCoreRabbitMqSample.Api.Consumers
             _logger.LogInformation("DateTime: " + DateTime.UtcNow);
             //throw new Exception("Exception test");
 
-
             await SendEmail(emailModel);
 
             await _messageBrokerService.PutMessageAsProcessed(context.Message.Id);

@@ -10,6 +10,6 @@ namespace DotnetCoreRabbitMqSample.Api.Model
         public DateTime CreatedOn { get; set; }
         public string Type { get; set; }
         public string Content { get; set; }
-        public DateTime ProcessTime { get; set; }
+        public DateTime? ProcessTime { get; set; }
     }
 }

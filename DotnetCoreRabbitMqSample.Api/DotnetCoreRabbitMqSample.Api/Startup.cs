@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using GreenPipes;
 using DotnetCoreRabbitMqSample.Api.Services;
 using System.Collections.Generic;
+using DotnetCoreRabbitMqSample.Api.Data;
+using Microsoft.EntityFrameworkCore;
+using DotnetCoreRabbitMqSample.Api.HostedServices;
 
 namespace DotnetCoreRabbitMqSample.Api
 {
@@ -26,8 +29,9 @@ namespace DotnetCoreRabbitMqSample.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddHostedService<MissingMessagePublisher>();
 
+            services.AddControllers();
             services.AddHealthChecks();
 
             services.Configure<HealthCheckPublisherOptions>(options =>
@@ -35,7 +39,11 @@ namespace DotnetCoreRabbitMqSample.Api
                 options.Delay = TimeSpan.FromSeconds(2);
                 options.Predicate = (check) => check.Tags.Contains("ready");
             });
-                
+
+            services.AddDbContext<AppDbContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("DatabaseConnection"),
+                        options => options.EnableRetryOnFailure()));
+
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<MembershipStartedEventConsumer>();
@@ -58,6 +66,7 @@ namespace DotnetCoreRabbitMqSample.Api
             services.AddAutoMapper(typeof(Startup));
 
             services.AddScoped<IMembershipService, MembershipService>();
+            services.AddScoped<IMessageBrokerService, MessageBrokerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
